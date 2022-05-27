@@ -1,0 +1,16 @@
+{
+  "name": "hcw-hono",
+  "version": "1.0.0",
+  "description": "hatebu comment watcher with hono",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "build": "yarn dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "y-moriya",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^1.4.1"
+  }
+}

@@ -57,7 +57,7 @@ export const createBookmark = async (KV: KVNamespace, param: Param): Promise<Boo
 export const updateBookmarkDate = async (KV: KVNamespace, id: string): Promise<boolean> => {
   const bookmark = await getBookmark(KV, id)
   if (!bookmark) return false
-  bookmark.last_updated_at = (new Date()).toLocaleString("ja")
+  bookmark.last_updated_at = (new Date()).toLocaleString("ja", { timeZone: "Asia/Tokyo"})
   await KV.put(generateID(id), JSON.stringify(bookmark))
   return true
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "wrangler dev src/index.ts",
     "build": "yarn dev",
+    "deploy": "wrangler publish src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "y-moriya",

@@ -9,13 +9,13 @@ declare global {
 export interface Bookmark {
   id: string
   url: string
-  title: string
+  link: string
   last_updated_at?: string
 }
 
 export type Param = {
   url?: string
-  title?: string
+  link?: string
   last_updated_at?: string
 }
 
@@ -48,10 +48,9 @@ export const getBookmark = async (KV: KVNamespace, id: string): Promise<Bookmark
 }
 
 export const createBookmark = async (KV: KVNamespace, param: Param): Promise<Bookmark | undefined> => {
-  if (!(param && param.title && param.url)) return
-  const id = crypto.randomUUID()
-  const newBookmark: Bookmark = { id: id, title: param.title, url: param.url }
-  await KV.put(generateID(id), JSON.stringify(newBookmark))
+  if (!(param && param.link && param.url)) return
+  const newBookmark: Bookmark = { id: param.url, link: param.link, url: param.url }
+  await KV.put(generateID(param.url), JSON.stringify(newBookmark))
   return newBookmark
 }
 

@@ -22,7 +22,7 @@ api.post('/bookmarks', async (c) => {
 })
 
 api.get('/bookmarks/:id', async (c) => {
-  const id = c.req.param('id')
+  const id = decodeURIComponent(c.req.param('id'))
   const bookmark = await model.getBookmark(c.env.YM_HCW, id)
   if (!bookmark) {
     return c.json({ error: 'Not Found', ok: false }, 404)
@@ -31,7 +31,7 @@ api.get('/bookmarks/:id', async (c) => {
 })
 
 api.put('/bookmarks/:id', async (c) => {
-  const id = c.req.param('id')
+  const id = decodeURIComponent(c.req.param('id'))
   const bookmark = await model.getBookmark(c.env.YM_HCW, id)
   if (!bookmark) {
     // 204 No Content
@@ -42,7 +42,8 @@ api.put('/bookmarks/:id', async (c) => {
 })
 
 api.delete('/bookmarks/:id', async (c) => {
-  const id = c.req.param('id')
+  const id = decodeURIComponent(c.req.param('id'))
+  console.log(id)
   const bookmark = await model.getBookmark(c.env.YM_HCW, id)
   if (!bookmark) {
     // 204 No Content

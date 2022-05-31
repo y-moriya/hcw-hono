@@ -37,7 +37,8 @@ api.put('/bookmarks/:id', async (c) => {
     // 204 No Content
     return new Response(null, { status: 204 })
   }
-  const success = await model.updateBookmarkDate(c.env.YM_HCW, id)
+  const param = c.req.parsedBody
+  const success = await model.updateBookmark(c.env.YM_HCW, id, param)
   return c.json({ ok: success })
 })
 

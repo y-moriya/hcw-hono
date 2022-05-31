@@ -11,12 +11,14 @@ export interface Bookmark {
   url: string
   link: string
   last_updated_at?: string
+  users?: string[]
 }
 
 export type Param = {
   url?: string
   link?: string
   last_updated_at?: string
+  users?: string[]
 }
 
 const generateID = (key: string) => {
@@ -48,16 +50,18 @@ export const getBookmark = async (KV: KVNamespace, id: string): Promise<Bookmark
 }
 
 export const createBookmark = async (KV: KVNamespace, param: Param): Promise<Bookmark | undefined> => {
-  if (!(param && param.link && param.url)) return
-  const newBookmark: Bookmark = { id: param.url, link: param.link, url: param.url }
+  if (!(param && param.link && param.url && param.last_updated_at)) return
+  const last_updated_at = convertDate(param.last_updated_at)
+  const newBookmark: Bookmark = { id: param.url, link: param.link, url: param.url, last_updated_at: last_updated_at }
   await KV.put(generateID(param.url), JSON.stringify(newBookmark))
   return newBookmark
 }
 
-export const updateBookmarkDate = async (KV: KVNamespace, id: string): Promise<boolean> => {
+export const updateBookmark = async (KV: KVNamespace, id: string, param: Param): Promise<boolean> => {
   const bookmark = await getBookmark(KV, id)
   if (!bookmark) return false
-  bookmark.last_updated_at = (new Date()).toLocaleString("ja", { timeZone: "Asia/Tokyo"})
+  bookmark.last_updated_at = param.last_updated_at
+  bookmark.users = param.users
   await KV.put(generateID(id), JSON.stringify(bookmark))
   return true
 }
@@ -67,4 +71,30 @@ export const deleteBookmark = async (KV: KVNamespace, id: string): Promise<boole
   if (!post) return false
   await KV.delete(generateID(id))
   return true
+}
+
+// Twitter の created_at を日付に変換する
+const convertDate = (date: string) => {
+  // そもそも valid な format で日付が送られてきた場合はそのまま返す
+  if (isValidDate(date)) return date
+
+  // May 31, 2022 at 08:00PM のような書式に対応する正規表現
+  let m = date.match(/(.+\d{4}) at (.+)([AP]M)/)
+
+  // マッチしなかったら空文字を返却
+  if (!m) return ''
+
+  // Date がパースできるように並び変え、PMなら12時間足す
+  let result = new Date(`${m[1].trim()} ${m[2]}`)
+  if (m[3] === 'PM') {
+    result = new Date(result.setHours(result.getHours() + 12))
+  }
+
+  // timezone の指定は不要
+  return result.toLocaleString("ja")
+}
+
+const isValidDate = (date: string) => {
+  const d = new Date(date)
+  return d instanceof Date && !isNaN(d.getTime())
 }

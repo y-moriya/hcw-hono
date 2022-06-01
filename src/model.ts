@@ -73,7 +73,7 @@ export const deleteBookmark = async (KV: KVNamespace, id: string): Promise<boole
   return true
 }
 
-// Twitter の created_at を日付に変換する
+// IFTTT の created_at を valid な日付に変換する
 const convertDate = (date: string) => {
   // そもそも valid な format で日付が送られてきた場合はそのまま返す
   if (isValidDate(date)) return date
@@ -84,8 +84,10 @@ const convertDate = (date: string) => {
   // マッチしなかったら空文字を返却
   if (!m) return ''
 
-  // Date がパースできるように並び変え、PMなら12時間足す
+  // Date がパースできるように並び変える
   let result = new Date(`${m[1].trim()} ${m[2]}`)
+
+  // PMなら12時間足す
   if (m[3] === 'PM') {
     result = new Date(result.setHours(result.getHours() + 12))
   }

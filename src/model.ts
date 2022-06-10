@@ -12,6 +12,7 @@ export interface Bookmark {
   link: string
   last_updated_at?: string
   users?: string[]
+  b_url?: string
 }
 
 export type Param = {
@@ -19,6 +20,7 @@ export type Param = {
   link?: string
   last_updated_at?: string
   users?: string[]
+  b_url?: string
 }
 
 const generateID = (key: string) => {
@@ -62,6 +64,7 @@ export const updateBookmark = async (KV: KVNamespace, id: string, param: Param):
   if (!bookmark) return false
   bookmark.last_updated_at = param.last_updated_at
   bookmark.users = param.users
+  bookmark.b_url = param.b_url
   await KV.put(generateID(id), JSON.stringify(bookmark))
   return true
 }
@@ -90,6 +93,11 @@ const convertDate = (date: string) => {
   // PMなら12時間足す
   if (m[3] === 'PM') {
     result = new Date(result.setHours(result.getHours() + 12))
+  }
+  
+  // 午前0時台は 12:00AM のようになっているため12時間減らす
+  if (m[3] === 'AM' && result.getHours() == 12) {
+    result = new Date(result.setHours(result.getHours() - 12))
   }
 
   // timezone の指定は不要
